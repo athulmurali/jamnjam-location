@@ -1,0 +1,37 @@
+version: ‘2’
+services:
+  backend:
+  build:
+  context: ./server
+  ports:
+  — “8000:8000”
+  command: node app.js
+  network_mode: host
+  depends_on:
+  — database
+  database:
+    container_name: database
+    build:
+    context: ./database
+    ports:
+    — “5432:5432”
+    network_mode: host
+
+
+app:
+  image: node:12
+  volumes:
+    - ./app:/app
+  links:
+    - neo4j
+  ports:
+    - "13000:3000"
+  working_dir: /app
+  entrypoint: node app.js
+
+database-postGIS:
+  image: neo4j:3.0
+  ports:
+    - "17474:7474"
+  volumes:
+    - ./db/dbms:/data/dbms
